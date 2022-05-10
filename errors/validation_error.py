@@ -1,0 +1,1 @@
+# Tee tähän oma ValidationError, jota voit käyttää mm. Category-classin create-metodissa.
