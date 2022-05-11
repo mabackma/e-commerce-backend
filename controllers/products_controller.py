@@ -4,7 +4,12 @@ from models import Publication
 from validators.validation_publications import validate_add_publication
 from flask_jwt_extended import jwt_required, get_jwt
 
+class ProductsRouteHandler(MethodView):
 
+    def post(self):
+    def get(self):
+
+"""
 # /api/products
 @validate_products_route_handler
 def products_route_handler():
@@ -14,8 +19,23 @@ def products_route_handler():
     # post lisää uuden tuotteen
 
     # huomaa, että tässä käytetään  @validate_products_route_handler dekoraattoria. Tarkista uutta tuotetta lisättäessä, että request_body sisältää namen ja categoryn
+"""
 
+class ProductsRouteHandler(MethodView):
 
+    def post(self, _id):
+        pass
+
+    def delete(self, _id):
+        pass
+
+    def patch(self, _id):
+        pass
+
+    def put(self, _id):
+        pass
+
+""" 
 @validate_product_route_handler
 def product_route_handler(_id):
 # kuten category_route_handlerkin, tämä route_handler vastaa request methodeihin GET, PATCH ja DELETE
@@ -25,5 +45,4 @@ def product_route_handler(_id):
 # delete poistaa yksittäisen tuotteen
 
 # huom. käytä patchissa @validate_product_route_handleria tarkistamaan että muokkauksessa requst_body sisältää namen ja categoryn
-
-
+"""
