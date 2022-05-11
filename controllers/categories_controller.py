@@ -1,8 +1,7 @@
 from flask.views import MethodView
 from flask import request, jsonify
-from models import Publication
-from validators.validation_publications import validate_add_publication
-from flask_jwt_extended import jwt_required, get_jwt
+from models import Category
+from validators.validation_categories import validate_add_category
 
 class CategoriesRouteHandler(MethodView):
 

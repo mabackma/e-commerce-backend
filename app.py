@@ -1,11 +1,9 @@
 from flask import Flask, jsonify
-from controllers.auth_controller import RegisterRouteHandler, LoginRouteHandler
 from controllers.home_controller import home_route_handler
-from controllers.publications_controller import PublicationsRouteHandler, PublicationRouteHandler
-from controllers.users_controller import UsersRouteHandler, UserRouteHandler
+from controllers.products_controller import ProductsRouteHandler, ProductRouteHandler
+from controllers.gategories_controller import CategoriesRouteHandler, CategoryRouteHandler
 from errors.validation_error import ValidationError
 from errors.not_found import NotFound
-from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 app.config.from_object('config.Config')

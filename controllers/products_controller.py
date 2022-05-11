@@ -1,8 +1,7 @@
 from flask.views import MethodView
 from flask import request, jsonify
-from models import Publication
-from validators.validation_publications import validate_add_publication
-from flask_jwt_extended import jwt_required, get_jwt
+from models import Product
+from validators.validation_products import validate_add_product
 
 class ProductsRouteHandler(MethodView):
 
@@ -23,7 +22,7 @@ def products_route_handler():
 
 class ProductsRouteHandler(MethodView):
 
-    def post(self, _id):
+    def get(self, _id):
         pass
 
     def delete(self, _id):
