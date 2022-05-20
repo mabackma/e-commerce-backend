@@ -134,9 +134,9 @@ class Category:
         category = Category(category_dictionary['name'], _id=category_dictionary['_id'])
         return category
 
-    @staticmethod
-    def get_products(_id):
-        products_cursor = db.products.find({'category': _id})
+
+    def get_products(self):
+        products_cursor = db.products.find({'category': self._id})
         products_list = list(products_cursor)
         products = []
         for product in products_list:

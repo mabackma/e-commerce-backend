@@ -1,16 +1,14 @@
 from flask.views import MethodView
 from flask import request, jsonify
-from models import Category
+from models import Category, Product
 from validators.validation_categories import validate_add_category
 
 class CategoryProductsRouteHandler(MethodView):
 
-    def get(self):
-        products_list = Category.get_products(self._id)
-        products = []
-        for product in products_list:
-            products.append(product)
-        return jsonify(products=Product.list_to_json())
+    def get(self, _id):
+        category = Category.get_by_id(_id)
+        products_list = category.get_products()
+        return jsonify(products=Product.list_to_json(products_list))
 
 
 class CategoriesRouteHandler(MethodView):
@@ -79,7 +77,7 @@ class CategoriesRouteHandler(MethodView):
 """
 
 class CategoryRouteHandler(MethodView):
-    # /api/categories/<_id>/categories
+    # /api/categories/<_id>/
     def get(self, _id):
         category = Category.get_by_id(_id)
         return jsonify(category=category.to_json())
