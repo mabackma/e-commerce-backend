@@ -30,7 +30,7 @@ app.add_url_rule("/api/categories/<_id>", view_func=CategoryRouteHandler.as_view
                  methods=["GET", "DELETE", "PATCH"])
 app.add_url_rule("/api/categories/<_id>/products",
                  view_func=CategoryProductsRouteHandler.as_view('category_products_route_handler'),
-                 methods=["GET", "DELETE", "PATCH"])
+                 methods=["GET"])
 
 
 app.run(debug=True)
