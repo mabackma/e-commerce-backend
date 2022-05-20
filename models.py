@@ -153,6 +153,14 @@ class Category:
 
     @staticmethod
     def delete_by_id(_id):
+
+        # Poistetaan kaikki kategorian tuotteet
+        category = Category.get_by_id(_id)
+        products_list = category.get_products()
+        for product in products_list:
+            db.products.delete_one({'_id': ObjectId(product._id)})
+
+        # Poistetaan kategoria
         result = db.categories.delete_one({'_id': ObjectId(_id)})
         if result.deleted_count == 0:
             raise NotFound(message="category not found")
