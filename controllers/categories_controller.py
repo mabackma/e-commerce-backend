@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import request, jsonify
 from models import Category, Product
-from validators.validation_categories import validate_categories_route_handler
+from validators.validation_categories import validate_category_route_handler
 
 class CategoryProductsRouteHandler(MethodView):
 
@@ -13,7 +13,7 @@ class CategoryProductsRouteHandler(MethodView):
 
 class CategoriesRouteHandler(MethodView):
 
-    @validate_categories_route_handler
+    @validate_category_route_handler
     def post(self):
         request_body = request.get_json()
 
@@ -39,7 +39,7 @@ class CategoryRouteHandler(MethodView):
         Category.delete_by_id(_id)
         return jsonify("category deleted")
 
-    @validate_categories_route_handler
+    @validate_category_route_handler
     def patch(self, _id):
         request_body = request.get_json()
         category = Category.get_by_id(_id)
