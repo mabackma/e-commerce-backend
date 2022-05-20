@@ -5,8 +5,40 @@ from validators.validation_products import validate_add_product
 
 class ProductsRouteHandler(MethodView):
 
+ #   @validate_add_product
     def post(self):
+        request_body = request.get_json()
+
+        name = request_body['name']
+        category = request_body['category']
+        product = Product(name, category)
+        product.create()
+
+        return jsonify(product=product.to_json())
+
     def get(self):
+        products = Product.get_all()
+
+        return jsonify(products=Product.list_to_json(products))
+
+class ProductRouteHandler(MethodView):
+
+    def get(self, _id):
+        product = Product.get_by_id(_id)
+        return jsonify(product=product.to_json())
+
+    def delete(self, _id):
+        Product.delete_by_id(_id)
+        return "product deleted"
+
+    def patch(self, _id):
+        request_body = request.get_json()
+        product = Product.get_by_id(_id)
+        product.name = request_body.get('name', product.name)
+        product.category = request_body.get('category', product.category)
+        product.update()
+        return jsonify(product=product.to_json())
+
 
 """
 # /api/products
@@ -19,20 +51,6 @@ def products_route_handler():
 
     # huomaa, että tässä käytetään  @validate_products_route_handler dekoraattoria. Tarkista uutta tuotetta lisättäessä, että request_body sisältää namen ja categoryn
 """
-
-class ProductsRouteHandler(MethodView):
-
-    def get(self, _id):
-        pass
-
-    def delete(self, _id):
-        pass
-
-    def patch(self, _id):
-        pass
-
-    def put(self, _id):
-        pass
 
 """ 
 @validate_product_route_handler

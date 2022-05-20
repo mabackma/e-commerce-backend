@@ -3,12 +3,42 @@ from flask import request, jsonify
 from models import Category
 from validators.validation_categories import validate_add_category
 
+class CategoryProductsRouteHandler(MethodView):
+    def get(self):
+        products_list = Category.get_products(self._id)
+        products = []
+        for product in products_list:
+            products.append(product)
+        return jsonify(products=Product.list_to_json())
+
 class CategoriesRouteHandler(MethodView):
 
+ #   @validate_add_category
     def post(self):
+        request_body = request.get_json()
+
+        name = request_body['name']
+        category = Category(name)
+        category.create()
+
+        return jsonify(category=category.to_json())
+
     def get(self):
+        categories = Category.get_all()
+
+        return jsonify(categories=Category.list_to_json(categories))
 
 """
+    # /api/categories/<_id>/products
+    def category_products_route_handler(_id):
+        pass
+        # _id on valitun kateogorian _id 
+    
+    
+        # tee tähän koodi, joka hakee Categories.get_products-metodia käyttäen ainoastaan valitun kategorian tuotteet
+
+
+
     # /api/categories
     @validate_categories_route_handler
     def categories_route_handler():
@@ -43,22 +73,22 @@ class CategoriesRouteHandler(MethodView):
         # huomaa custom dekoraattori: @validate_category_route_handler. Käytä tätä patchissa varmistamaan,
         # että name löytyy request_bodysta. Voit toki käyttää samaa dekoraattoria kuin uuden lisäyksessä,
         # koska logiikka on sama
+    
 """
 
 class CategoryRouteHandler(MethodView):
-    # /api/categories/<_id>/products
+    # /api/categories/<_id>/categories
     def get(self, _id):
-        pass
-        # _id on valitun kateogorian _id
-        # voit vaihtoehtoisesti käyttää route_handlerina funktion sijasta MethodView-perivää classia
-        # classin käytöstä saat lisäpisteitä
+        category = Category.get_by_id(_id)
+        return jsonify(category=category.to_json())
 
-        # tee tähän koodi, joka hakee Categories.get_products-metodia käyttäen ainoastaan valitun kategorian tuotteet
     def delete(self, _id):
-        pass
+        Category.delete_by_id(_id)
+        return "category deleted"
 
     def patch(self, _id):
-        pass
-
-    def put(self, _id):
-        pass
+        request_body = request.get_json()
+        category = Category.get_by_id(_id)
+        category.name = request_body.get('name', category.name)
+        category.update()
+        return jsonify(category=category.to_json())

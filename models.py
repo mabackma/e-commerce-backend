@@ -12,49 +12,68 @@ db = client.e_commerce
 
 
 class Product:
-    def __init__(self, name, cateogory, _id=None):
-        # name on tuotteen nimi, tieto on pakollinen
-        # category on sen kategorian _id-kentän arvo, johon kyseinen tuote kuuluu. Tieto on pakollinen, eli jokaisen tuotteen täytyy kuulua kateogoriaan
-        # _id on tuotteen oma _id, tieto ei ole pakollinen, koska se saadaan vasta create-metodissa sen jälkeen, kun uusi tuote on tallennettu tietokantaan
-
+    def __init__(self, name, category, _id=None):
         if _id is not None:
             _id = str(_id)
         self._id = _id
         self.name = name
         self.category = str(category)
 
-    # luo tähän CRUD:n mukaiset metodit, kuten modeliin kuuluu
-
     def create(self):
-        pass
-        # lisää tähän koodi, jolla tallennat tuotteen tietokantaan (katso mallia toisesta projektista)
+        result = db.products.insert_one({
+            'name': self.name,
+            'category': self.category
+        })
+        self._id = str(result.inserted_id)
 
+    def update(self):
+        _filter = {'_id': ObjectId(self._id)}
+        _update = {
+            '$set': {'name': self.name, 'category': self.category}
+        }
+        db.products.update_one(_filter, _update)
+
+    # Palauttaa dictionaryn
+    def to_json(self):
+        return {
+            '_id': str(self._id),
+            'name': self.name,
+            'category': self.category
+        }
+
+    # Palauttaa jsonin
     @staticmethod
-    def get_by_id(_id):
-        pass
-        # lisää tähän koodi, joka hakee _id:n perusteella yhden tuotteen ja palauttaa sen
-        # jos tuotetta ei löydy, heitä NotFoud exception
+    def list_to_json(product_list):
+        products = []
+        for product in product_list:
+            products.append(product.to_json())
+        return products
 
     @staticmethod
     def get_all():
-        pass
-        # lisää tähän koodi. joka hakee kaikki tuotteet. Luuppaa ne läpi ja lisää listaan Product-tietotyypin muuttujia. Palauta lista sen jälkeen
-
-    def update(self):
-        pass
-        # lisää tähän koodi, joka päivittää tuotteen nimen ja kateogorian
-
-    def delete(self):
-        pass
-        # lisää tähän koodi, joka poistaa tuotteen
-
-    def to_json(self):
-        pass
-        # lisää tähän koodi, joka palauttaa yksittäisen tuotteen tiedot dictionaryna (jotta jsonify osaa palauttaa tuotteen tiedot jsonina)
+        products_cursor = db.products.find()
+        products_list = list(products_cursor)
+        products = []
+        for product in products_list:
+            product_object = Product(product['name'], product['category'], _id=product['_id'])
+            products.append(product_object)
+        return products
 
     @staticmethod
-    def list_to_json(products):
-# lisää tähän koodi, joka luuppaa kaikki products-listan tuotteet läpi ja kutsuu jokaisen yksittäisen tuotteen kohdalla yo. to_json-metodia. Lisää to_jsonin tulos listaan ja palauta lista
+    def get_by_id(_id):
+        product_dictionary = db.products.find_one({'_id': ObjectId(_id)})
+        if product_dictionary is None:
+            raise NotFound(message="product not found.")
+        product = Product(product_dictionary['name'], product_dictionary['category'], _id=product_dictionary['_id'])
+        return product
+        # jos tuotetta ei löydy, heitä NotFoud exception
+
+    @staticmethod
+    def delete(self):
+        result = db.products.delete_one({'_id': ObjectId(self._id)})
+        if result.deleted_count == 0:
+            raise NotFound(message="product not found")
+
 
 
 class Category:
@@ -64,41 +83,82 @@ class Category:
         self._id = _id
         self.name = name
 
-        # name on kategorian nimi. Tieto on pakollinen
-        # _id on kateogorian _id MongoDB-tietokannassa
-
+    # Luo uuden uniikin kategorian
     def create(self):
+        unique = self._is_unique()
+        if unique:
+            result = db.categories.insert_one({
+                'name': self.name
+            })
+            self._id = str(result.inserted_id)
+        else:
+            raise ValidationError(message="Category name must be unique")
 
-    # kutsu tässä ennen lisäystä
-    # _is_unique-metodia, jolla tarkistat, onko self.name:n arvolla lähetetty
+    def update(self):
+        _filter = {'_id': ObjectId(self._id)}
+        _update = {
+            '$set': {'name': self.name}
+        }
+        db.categories.update_one(_filter, _update)
 
-    # unique = self._is_unique()
+    # Palauttaa dictionaryn
+    def to_json(self):
+        return {
+            '_id': str(self._id),
+            'name': self.name
+        }
 
-    # jos unique on True, voit jatkaa uuden kategorian tallentamista
-    # jos unique on False, heitä tästä omatekoinen ValidationError, joka keskeyttää tallennuksen
-    # kerro ValidationErrorin messagessa, että kategorian pitää olla uniikki ValidationError(message='Category name must be unique')
+    # Palauttaa jsonin
+    @staticmethod
+    def list_to_json(category_list):
+        categories = []
+        for category in category_list:
+            categories.append(category.to_json())
+        return categories
 
-    # kirjoita tähän Product-classissa olevat vastaavat CRUD:n metodia kategorioille
+    @staticmethod
+    def get_all():
+        categories_cursor = db.categories.find()
+        categories_list = list(categories_cursor)
+        categories = []
+        for category in categories_list:
+            category_object = Category(category['name'], _id=category['_id'])
+            categories.append(category_object)
+        return categories
 
-    # Product-classista löytyvien metodien lisäksi kirjoita myös ao. metodi
+    @staticmethod
+    def get_by_id(_id):
+        category_dictionary = db.categories.find_one({'_id': ObjectId(_id)})
+        if category_dictionary is None:
+            raise NotFound(message="category not found.")
+        category = Category(category_dictionary['name'], _id=category_dictionary['_id'])
+        return category
 
-    def get_products(self):
+    @staticmethod
+    def get_products(_id):
+        products_cursor = db.products.find({'category': _id})
+        products_list = list(products_cursor)
+        products = []
+        for product in products_list:
+            product_object = Product(product['name'], product['category'], _id=product['_id'])
+            products.append(product_object)
+        return products
 
-    # kirjoita tähän koodi, joka hakee kaikki tuotteet, joilla category-avaimen arvo on self._id (eli valitun kategorian _id)
-    # palauta tuotteet listassa, joka sisältää Product-tietotyypin muuttujia (eli [Product, Product Product...])
-
+    # Tarkistaa onko saman nimistä kategoriaa jo olemassa
     def _is_unique(self):
+        category = db.categories.find_one({'name': self.name})
+        if category is not None:
+            return False
+        return True
 
-    # kirjoita lisäksi koodi, joka hakee ensimmäisen (find_one) cateogorian, jonka name on self.namen arvo
-    # tätä metodia kutsutaan  create-metodin sisällä tarkistamaan, onko lisättävän kategorian nimi uniikki vai ei
-    # jos find_one-funktio palauttaa None, silloin toista samannimistä kategoriaa ei ole olemassa
-    # jos find_one-funktio löytää self.namen arvolla kateogorian, silloin uuden kategorian nimi ei ole uniikki (eikä sitä voi lisätä)
-
-    # jos find_one palauttaa None
-    # palauta True
-    # jos find_one palauttaa Kategorian palauta False
-
+    @staticmethod
     def delete(self):
+        result = db.categories.delete_one({'_id': ObjectId(self._id)})
+        if result.deleted_count == 0:
+            raise NotFound(message="category not found")
+
+
+
 # HUOM! Kun poistat kategorian, muista poistaa myös siihen kuuluvat tuotteet ennen kategorian poistoa
 # voit käyttää tässä self.find_products-metodia
 
