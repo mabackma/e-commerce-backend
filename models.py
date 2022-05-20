@@ -158,19 +158,12 @@ class Category:
         category = Category.get_by_id(_id)
         products_list = category.get_products()
         for product in products_list:
-            db.products.delete_one({'_id': ObjectId(product._id)})
+            Product.delete_by_id(product._id)
 
         # Poistetaan kategoria
         result = db.categories.delete_one({'_id': ObjectId(_id)})
         if result.deleted_count == 0:
             raise NotFound(message="category not found")
-
-
-
-# HUOM! Kun poistat kategorian, muista poistaa myös siihen kuuluvat tuotteet ennen kategorian poistoa
-# voit käyttää tässä self.find_products-metodia
-
-# luuppaa kaikki find_products-metodin palauttamat tuotteet ja kutsu yksittäiselle productille product.delete-metodia
 
 
 
