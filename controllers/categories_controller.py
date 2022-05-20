@@ -4,12 +4,14 @@ from models import Category
 from validators.validation_categories import validate_add_category
 
 class CategoryProductsRouteHandler(MethodView):
+
     def get(self):
         products_list = Category.get_products(self._id)
         products = []
         for product in products_list:
             products.append(product)
         return jsonify(products=Product.list_to_json())
+
 
 class CategoriesRouteHandler(MethodView):
 
@@ -84,7 +86,7 @@ class CategoryRouteHandler(MethodView):
 
     def delete(self, _id):
         Category.delete_by_id(_id)
-        return "category deleted"
+        return jsonify("category deleted")
 
     def patch(self, _id):
         request_body = request.get_json()

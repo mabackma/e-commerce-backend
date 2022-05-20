@@ -29,7 +29,7 @@ class ProductRouteHandler(MethodView):
 
     def delete(self, _id):
         Product.delete_by_id(_id)
-        return "product deleted"
+        return jsonify("product deleted")
 
     def patch(self, _id):
         request_body = request.get_json()

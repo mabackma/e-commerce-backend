@@ -69,8 +69,8 @@ class Product:
         # jos tuotetta ei löydy, heitä NotFoud exception
 
     @staticmethod
-    def delete(self):
-        result = db.products.delete_one({'_id': ObjectId(self._id)})
+    def delete_by_id(_id):
+        result = db.products.delete_one({'_id': ObjectId(_id)})
         if result.deleted_count == 0:
             raise NotFound(message="product not found")
 
@@ -152,8 +152,8 @@ class Category:
         return True
 
     @staticmethod
-    def delete(self):
-        result = db.categories.delete_one({'_id': ObjectId(self._id)})
+    def delete_by_id(_id):
+        result = db.categories.delete_one({'_id': ObjectId(_id)})
         if result.deleted_count == 0:
             raise NotFound(message="category not found")
 
