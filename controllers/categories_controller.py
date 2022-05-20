@@ -36,7 +36,8 @@ class CategoryRouteHandler(MethodView):
         return jsonify(category=category.to_json())
 
     def delete(self, _id):
-        Category.delete_by_id(_id)
+        category = Category.get_by_id(_id)
+        category.delete()
         return jsonify("category deleted")
 
     @validate_category_route_handler

@@ -68,13 +68,10 @@ class Product:
         return product
         # jos tuotetta ei löydy, heitä NotFoud exception
 
-    @staticmethod
-    def delete_by_id(_id):
-        result = db.products.delete_one({'_id': ObjectId(_id)})
+    def delete(self):
+        result = db.products.delete_one({'_id': ObjectId(self._id)})
         if result.deleted_count == 0:
             raise NotFound(message="product not found")
-
-
 
 class Category:
     def __init__(self, name, _id=None):
@@ -134,7 +131,6 @@ class Category:
         category = Category(category_dictionary['name'], _id=category_dictionary['_id'])
         return category
 
-
     def get_products(self):
         products_cursor = db.products.find({'category': self._id})
         products_list = list(products_cursor)
@@ -151,19 +147,16 @@ class Category:
             return False
         return True
 
-    @staticmethod
-    def delete_by_id(_id):
+    def delete(self):
 
         # Poistetaan kaikki kategorian tuotteet
-        category = Category.get_by_id(_id)
+        category = Category.get_by_id(self._id)
         products_list = category.get_products()
         for product in products_list:
-            Product.delete_by_id(product._id)
+            product.delete()
 
         # Poistetaan kategoria
-        result = db.categories.delete_one({'_id': ObjectId(_id)})
+        result = db.categories.delete_one({'_id': ObjectId(self._id)})
         if result.deleted_count == 0:
             raise NotFound(message="category not found")
-
-
 
