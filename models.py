@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 from errors.not_found import NotFound
 from errors.validation_error import ValidationError
 
+# Haetaan tietokanta db
 client = pymongo.MongoClient(
     Config.CONNECTION_STRING,
     server_api=ServerApi('1'))

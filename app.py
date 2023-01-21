@@ -7,7 +7,9 @@ from errors.validation_error import ValidationError
 from errors.not_found import NotFound
 
 app = Flask(__name__)
-app.config.from_object('config.Config')
+
+# Configure app
+app.config.from_pyfile('config.py')
 
 @app.errorhandler(ValidationError)
 def handle_validation_error(err):
