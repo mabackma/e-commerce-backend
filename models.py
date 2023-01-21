@@ -89,7 +89,7 @@ class Category:
             })
             self._id = str(result.inserted_id)
         else:
-            raise ValidationError(message="Category name must be unique")
+            raise ValidationError(message="Category name must be unique!")
 
     def update(self):
         _filter = {'_id': ObjectId(self._id)}
